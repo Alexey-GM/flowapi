@@ -15,6 +15,9 @@ data class Trick (
     @Column(nullable = false)
     val description: String = "",
 
+    @Column(nullable = false)
+    val category: String = "",
+
     @Column(nullable = false, name = "image_url")
     val imageUrl: String = "",
 
@@ -24,6 +27,9 @@ data class Trick (
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sport_id", nullable = false)
     val sport: Sport,
+
+    @OneToMany(mappedBy = "trick", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val steps: List<TrickStep> = mutableListOf(),
 
     @OneToMany(mappedBy = "trick", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val users: List<UserTrick> = mutableListOf(),

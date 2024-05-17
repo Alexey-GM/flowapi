@@ -12,6 +12,12 @@ data class Event (
     @Column(nullable = false)
     val name: String = "",
 
+    @Column(name = "start_date", nullable = false)
+    val startDate: String,
+
+    @Column(name = "end_date", nullable = false)
+    val endDate: String,
+
     @Column(nullable = false)
     val description: String = "",
 

@@ -1,33 +1,25 @@
 package com.example.flowapi.controller.user
 
+import com.example.flowapi.controller.sport.SportResponse
+import com.example.flowapi.controller.toModel
+import com.example.flowapi.controller.toResponse
 import com.example.flowapi.model.User
 import com.example.flowapi.service.UserService
 import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/register")
+@RequestMapping("/api")
 class UserController(private val service: UserService) {
 
-    @PostMapping
-    fun register(@RequestBody userRequest: UserRequest): UserResponse {
-        val user = userRequest.toModel()
-        service.createUser(user)
-        return UserResponse("Создан")
+    @PostMapping("/{userId}/sports/{sportId}")
+    fun addSportToUser(@PathVariable userId: Int, @PathVariable sportId: Int) {
+        service.addSportToUser(userId, sportId)
     }
 
-    private fun UserRequest.toModel(): User {
-        return User(
-            id = 0,
-            mail = this.mail,
-            firstName = this.firstName,
-            lastName = this.lastName,
-            password = this.password,
-            dateOfBirth = this.dateOfBirth,
-            gender = this.gender,
-            city = this.city,
-            status = "Новичок",
-            role = "USER",
-        )
+    @GetMapping("/{userId}/sports")
+    fun getUserSports(@PathVariable userId: Int): List<SportResponse> {
+        val sports = service.getUserSports(userId).map { it.toResponse() }
+        return sports
     }
 }

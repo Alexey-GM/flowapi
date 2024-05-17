@@ -1,0 +1,24 @@
+package com.example.flowapi.repository
+
+import com.example.flowapi.model.Sport
+import com.example.flowapi.model.Trick
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.stereotype.Repository
+
+@Repository
+interface TrickRepository: JpaRepository<Trick, Int> {
+    // Получить все трюки по спорту
+    fun findBySportId(sportId: Int): List<Trick>
+    // Получить трюки по категории (type) и спорту
+    fun findBySportIdAndCategory(sportId: Int, type: String): List<Trick>
+    // Получить трюки, которые пользователь уже выполнил (по предположению, что startDate и learningDuration не равны null)
+    @Query("SELECT ut.trick FROM UserTrick ut WHERE ut.user.id = :userId AND ut.trick.sport.id = :sportId AND ut.startDate IS NOT NULL AND ut.learningDuration IS NOT NULL")
+    fun findCompletedTricksByUserIdAndSportId(userId: Int, sportId: Int): List<Trick>
+    // Получить трюки, которые пользователь находится в процессе выполнения (startDate не равен null, но learningDuration равен null)
+    @Query("SELECT ut.trick FROM UserTrick ut WHERE ut.user.id = :userId AND ut.trick.sport.id = :sportId AND ut.startDate IS NOT NULL AND ut.learningDuration IS NULL")
+    fun findInProcessTricksByUserIdAndSportId(userId: Int, sportId: Int): List<Trick>
+    // Получить следующие трюки пользователя (где startDate равен null и learningDuration равен null)
+    @Query("SELECT ut.trick FROM UserTrick ut WHERE ut.user.id = :userId AND ut.trick.sport.id = :sportId AND ut.startDate IS NULL AND ut.learningDuration IS NULL")
+    fun findNextTricksByUserIdAndSportId(userId: Int, sportId: Int): List<Trick>
+}

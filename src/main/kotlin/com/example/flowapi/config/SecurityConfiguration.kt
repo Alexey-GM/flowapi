@@ -15,31 +15,30 @@ import java.security.AuthProvider
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration (
-    private val authenticationProvider: AuthenticationProvider,
-){
+class SecurityConfiguration(
+    private val authenticationProvider: AuthenticationProvider
+) {
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
         jwtAuthenticationFilter: JwtAuthenticationFilter
     ): DefaultSecurityFilterChain {
         return http
-            .csrf{ it.disable() }
-            .authorizeHttpRequests {
-                it
-                    .requestMatchers("/api/auth", "/api/auth/refresh", "/error", "/register")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/user")
-                    .permitAll()
-                    .requestMatchers("/api/user**", "/sport")
-                    .hasRole("USER")
-                    .anyRequest()
-                    .fullyAuthenticated()
+            .csrf { it.disable() }
+            .authorizeHttpRequests { auth ->
+                auth
+                    .requestMatchers("/api/auth", "/api/auth/refresh", "/error", "/api/register").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
+                    .requestMatchers(
+                        "/api/user/**",
+                        "/api/sport/**"
+                    ).hasRole("USER")
+                    .requestMatchers(
+                        "/api/tricks/**" // Делаем все маршруты /api/tricks доступными для всех
+                    ).permitAll()
+                    .anyRequest().authenticated()
             }
-            .sessionManagement {
-                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-            }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()

@@ -7,7 +7,5 @@ data class UserRequest (
     val lastName: String,
     val dateOfBirth: String,
     val gender: String,
-    val city: String,
-    val status: String,
-    val role: String,
+    val city: String
 )

@@ -10,7 +10,7 @@ data class User (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     val mail: String = "",
 
     @Column(nullable = false)
@@ -38,7 +38,7 @@ data class User (
     val role: String = "",
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val sports: List<UserSport> = mutableListOf(),
+    var sports: List<UserSport> = mutableListOf(),
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val tricks: List<UserTrick> = mutableListOf(),
