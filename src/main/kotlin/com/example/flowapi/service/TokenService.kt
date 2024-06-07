@@ -1,6 +1,7 @@
 package com.example.flowapi.service
 
 import com.example.flowapi.config.JwtProperties
+import com.example.flowapi.repository.UserRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class TokenService(jwtProperties: JwtProperties) {
+class TokenService(jwtProperties: JwtProperties, private val userRepository: UserRepository) {
     private val secretKey = Keys.hmacShaKeyFor(
         jwtProperties.key.toByteArray()
     )
@@ -19,12 +20,15 @@ class TokenService(jwtProperties: JwtProperties) {
         expirationDate: Date,
         additionalClaims: Map<String, Any> = emptyMap()
     ): String {
+
+        val userId = userRepository.findByMail(userDetails.username)?.id.toString()
         return Jwts.builder()
             .claims()
             .subject(userDetails.username)
             .issuedAt(Date(System.currentTimeMillis()))
             .expiration(expirationDate)
             .add(additionalClaims)
+            .add("userId", userId)
             .and()
             .signWith(secretKey)
             .compact()

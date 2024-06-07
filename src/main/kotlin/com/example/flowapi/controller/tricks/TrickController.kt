@@ -1,12 +1,10 @@
 package com.example.flowapi.controller.tricks
 
-import com.example.flowapi.model.Trick
+import com.example.flowapi.controller.toResponse
 import com.example.flowapi.service.TricksService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
@@ -17,9 +15,18 @@ class TrickController(
 
     @GetMapping("/all/{sportId}")
     fun getAllTricks(@PathVariable sportId: Int): ResponseEntity<List<TricksResponse>> {
-        val tricks = trickService.getAllTricks(sportId)
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val tricks = trickService.getAllTricks(userId, sportId)
         return ResponseEntity.ok(tricks)
     }
+
+    @GetMapping("/{trickId}")
+    fun getTrickById(@PathVariable trickId: Int): ResponseEntity<TricksResponse> {
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val trick = trickService.getTrickById(userId, trickId)
+        return ResponseEntity.ok(trick)
+    }
+
 
     @GetMapping("/categories/{sportId}")
     fun getCategories(@PathVariable sportId: Int): ResponseEntity<List<String>> {
@@ -29,7 +36,8 @@ class TrickController(
 
     @GetMapping("/category/{sportId}/{category}")
     fun getTricksByCategory(@PathVariable sportId: Int, @PathVariable category: String): ResponseEntity<List<TricksResponse>> {
-        val tricks = trickService.getTricksByCategory(sportId, category)
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val tricks = trickService.getTricksByCategory(userId, sportId, category)
         return ResponseEntity.ok(tricks)
     }
 
@@ -51,23 +59,17 @@ class TrickController(
         return ResponseEntity.ok(tricks)
     }
 
-    @GetMapping("/sport/{sportId}/user/{userId}")
-    fun getUserTricksAggregate(
-        @PathVariable userId: Int,
-        @PathVariable sportId: Int
-    ): ResponseEntity<UserTricksAggregateResponse> {
-        val categories = trickService.getCategories(sportId)
-        val done = trickService.getUserTricksDone(userId, sportId)
-        val inProcess = trickService.getUserTricksInProcess(userId, sportId)
-        val next = trickService.getUserTricksNext(userId, sportId)
+    @PostMapping("/start-learning")
+    fun startLearningTrick(@RequestParam trickId: Int): ResponseEntity<Void> {
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        trickService.startLearningTrick(userId, trickId)
+        return ResponseEntity.ok().build()
+    }
 
-        val aggregateResponse = UserTricksAggregateResponse(
-            categories = categories,
-            done = done,
-            inProcess = inProcess,
-            next = next
-        )
-
-        return ResponseEntity.ok(aggregateResponse)
+    @PostMapping("/complete-learning")
+    fun completeLearningTrick(@RequestParam trickId: Int, @RequestParam learningDuration: Int): ResponseEntity<Void> {
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        trickService.completeLearningTrick(userId, trickId, learningDuration)
+        return ResponseEntity.ok().build()
     }
 }

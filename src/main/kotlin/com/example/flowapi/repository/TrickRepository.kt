@@ -2,12 +2,14 @@ package com.example.flowapi.repository
 
 import com.example.flowapi.model.Sport
 import com.example.flowapi.model.Trick
+import com.example.flowapi.model.UserTrick
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
 interface TrickRepository: JpaRepository<Trick, Int> {
+    fun getTrickById(id: Int): Trick
     // Получить все трюки по спорту
     fun findBySportId(sportId: Int): List<Trick>
     // Получить трюки по категории (type) и спорту
@@ -21,4 +23,7 @@ interface TrickRepository: JpaRepository<Trick, Int> {
     // Получить следующие трюки пользователя (где startDate равен null и learningDuration равен null)
     @Query("SELECT ut.trick FROM UserTrick ut WHERE ut.user.id = :userId AND ut.trick.sport.id = :sportId AND ut.startDate IS NULL AND ut.learningDuration IS NULL")
     fun findNextTricksByUserIdAndSportId(userId: Int, sportId: Int): List<Trick>
+
+    @Query("SELECT ut FROM UserTrick ut WHERE ut.user.id = :userId")
+    fun findAllTricksByUserId(userId: Int): List<UserTrick>
 }

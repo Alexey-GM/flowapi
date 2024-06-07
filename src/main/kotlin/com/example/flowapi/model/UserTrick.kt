@@ -18,8 +18,8 @@ data class UserTrick (
     val trick: Trick,
 
     @Column(name = "start_date", nullable = true)
-    val startDate: String,
+    val startDate: String?,
 
     @Column(name = "learning_duration", nullable = true)
-    val learningDuration: Int
+    val learningDuration: Int?
 )

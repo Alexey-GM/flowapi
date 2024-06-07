@@ -1,5 +1,6 @@
 package com.example.flowapi.config
 
+import com.example.flowapi.repository.UserRepository
 import com.example.flowapi.service.CustomUserDetailsService
 import com.example.flowapi.service.TokenService
 import jakarta.servlet.FilterChain
@@ -16,7 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthenticationFilter(
     private val userDetailsService: CustomUserDetailsService,
-    private val tokenService: TokenService
+    private val tokenService: TokenService,
+    private val userRepository: UserRepository
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -32,21 +34,23 @@ class JwtAuthenticationFilter(
         val jwt = authHeader!!.extractTokenValue()
         val email = tokenService.extractEmail(jwt)
 
+
+
         if (email != null && SecurityContextHolder.getContext().authentication == null) {
             val foundUser = userDetailsService.loadUserByUsername(email)
-
+            val id = userRepository.findByMail(email)!!.id
             if (tokenService.isValid(jwt, foundUser)) {
-                updateContext(foundUser, request)
+                updateContext(foundUser, id, request)
             }
 
             filterChain.doFilter(request, response)
         }
     }
 
-    private fun updateContext(foundUser: UserDetails, request: HttpServletRequest) {
+    private fun updateContext(foundUser: UserDetails, userId: Int, request: HttpServletRequest) {
         val authToken = UsernamePasswordAuthenticationToken(foundUser.username, null, foundUser.authorities)
         authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-
+        authToken.details = userId
         SecurityContextHolder.getContext().authentication = authToken
     }
 

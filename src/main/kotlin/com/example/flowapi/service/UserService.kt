@@ -7,6 +7,8 @@ import com.example.flowapi.model.UserSport
 import com.example.flowapi.repository.SportRepository
 import com.example.flowapi.repository.UserRepository
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 
 @Service
@@ -23,5 +25,14 @@ class UserService(private val userRepository: UserRepository, private val sportR
     fun getUserSports(userId: Int): List<Sport> {
         val user = userRepository.findById(userId).orElseThrow { ApiException(404, "User not found") }
         return user.sports.map { it.sport }
+    }
+
+    fun getUserIdFromToken(): Int? {
+        val authentication = SecurityContextHolder.getContext().authentication
+        if (authentication != null && authentication.details is UserDetails) {
+            val userDetails = authentication.details as UserDetails
+            return userRepository.findByMail(userDetails.username)?.id
+        }
+        return null
     }
 }

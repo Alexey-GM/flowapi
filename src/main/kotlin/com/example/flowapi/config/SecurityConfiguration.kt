@@ -31,11 +31,12 @@ class SecurityConfiguration(
                     .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                     .requestMatchers(
                         "/api/user/**",
-                        "/api/sport/**"
+                        "/api/sport/**",
+                        "/api/tricks/**"
                     ).hasRole("USER")
-                    .requestMatchers(
-                        "/api/tricks/**" // Делаем все маршруты /api/tricks доступными для всех
-                    ).permitAll()
+                    //.requestMatchers(
+                    //    "/api/tricks/**" // Делаем все маршруты /api/tricks доступными для всех
+                    //).permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }

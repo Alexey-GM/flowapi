@@ -1,9 +1,6 @@
 package com.example.flowapi.controller.tricks
 
-import com.example.flowapi.model.Sport
-import com.example.flowapi.model.TrickComment
-import com.example.flowapi.model.TrickStep
-import com.example.flowapi.model.UserTrick
+import com.example.flowapi.model.*
 import jakarta.persistence.*
 
 data class TricksResponse(
@@ -13,6 +10,7 @@ data class TricksResponse(
     val category: String,
     val imageUrl: String,
     val difficulty: String,
+    val status: TrickStatus,
     val steps: List<StepResponse>,
     val comments: List<TrickComment>
 )

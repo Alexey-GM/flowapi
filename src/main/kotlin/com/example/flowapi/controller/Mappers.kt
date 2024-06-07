@@ -4,10 +4,7 @@ import com.example.flowapi.controller.sport.SportResponse
 import com.example.flowapi.controller.tricks.StepResponse
 import com.example.flowapi.controller.tricks.TricksResponse
 import com.example.flowapi.controller.user.UserRequest
-import com.example.flowapi.model.Sport
-import com.example.flowapi.model.Trick
-import com.example.flowapi.model.TrickStep
-import com.example.flowapi.model.User
+import com.example.flowapi.model.*
 
 fun UserRequest.toModel(): User {
     return User(
@@ -32,7 +29,7 @@ fun Sport.toResponse(): SportResponse {
     )
 }
 
-fun Trick.toResponse(): TricksResponse {
+fun Trick.toResponse(userTrickStatus: TrickStatus? = null): TricksResponse {
     return TricksResponse(
         id = this.id,
         name = this.name,
@@ -41,7 +38,8 @@ fun Trick.toResponse(): TricksResponse {
         imageUrl = this.imageUrl,
         difficulty = this.difficulty,
         steps = this.steps.map { it.toResponse() },
-        comments = this.comments
+        comments = this.comments,
+        status = userTrickStatus ?: TrickStatus.NOT_LEARNED // Установка статуса по умолчанию
     )
 }
 
