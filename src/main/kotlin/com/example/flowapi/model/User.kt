@@ -5,13 +5,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Entity
 @Table(name = "users")
-data class User (
+data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Int = 0,
 
     @Column(nullable = false, unique = true)
     val mail: String = "",
+
+    @Column(name = "image_url", nullable = false)
+    val imageUrl: String = "",
 
     @Column(nullable = false)
     var password: String = "",
@@ -47,7 +50,21 @@ data class User (
     val comments: List<TrickComment> = mutableListOf(),
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val events: List<Event> = mutableListOf()
+    val events: List<Event> = mutableListOf(),
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val posts: List<Post> = mutableListOf(),
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val likes: List<PostLike> = mutableListOf(),
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_subscriptions",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "subscription_id")]
+    )
+    val subscriptions: Set<User> = mutableSetOf()
 ) {
     fun comparePassword(password: String): Boolean {
         return BCryptPasswordEncoder().matches(password, this.password)

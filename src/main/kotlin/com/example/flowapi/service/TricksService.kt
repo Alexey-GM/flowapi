@@ -2,12 +2,9 @@ package com.example.flowapi.service
 
 import com.example.flowapi.controller.toResponse
 import com.example.flowapi.controller.tricks.TricksResponse
-import com.example.flowapi.exception.ApiException
-import com.example.flowapi.model.Trick
 import com.example.flowapi.model.TrickStatus
 import com.example.flowapi.model.User
 import com.example.flowapi.model.UserTrick
-import com.example.flowapi.repository.SportRepository
 import com.example.flowapi.repository.TrickRepository
 import com.example.flowapi.repository.UserTrickRepository
 import org.springframework.stereotype.Service

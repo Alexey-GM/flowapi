@@ -1,5 +1,8 @@
 package com.example.flowapi.controller
 
+import com.example.flowapi.controller.post.dto.PostCommentDto
+import com.example.flowapi.controller.post.dto.PostDto
+import com.example.flowapi.controller.post.dto.UserDto
 import com.example.flowapi.controller.sport.SportResponse
 import com.example.flowapi.controller.tricks.StepResponse
 import com.example.flowapi.controller.tricks.TricksResponse
@@ -48,5 +51,40 @@ fun TrickStep.toResponse(): StepResponse {
         id = this.id,
         stepNumber = this.stepNumber,
         description = this.description,
+    )
+}
+
+fun Post.toDto(): PostDto {
+    return PostDto(
+        id = this.id,
+        text = this.text ?: "",
+        date = this.date.toString(),
+        comments = this.comments.map { it.toDto() },
+        likes = this.likes.size,
+        user = this.user.toDto(),
+        media = this.media ?: ""
+    )
+}
+
+fun User.toDto(): UserDto {
+    return UserDto(
+        id = this.id,
+        imageUrl = this.imageUrl,
+        email = this.mail,
+        firstName = this.firstName,
+        lastName = this.lastName,
+        birthDate = this.dateOfBirth,
+        city = this.city,
+        status = this.status
+    )
+}
+
+fun PostComment.toDto(): PostCommentDto {
+    return PostCommentDto(
+        id = this.id,
+        user = this.user.toDto(),
+        likes = 0,
+        text = this.text,
+        date = this.date.toString()
     )
 }
