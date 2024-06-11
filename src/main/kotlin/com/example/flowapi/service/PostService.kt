@@ -15,6 +15,7 @@ import com.example.flowapi.repository.UserRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @Service
@@ -22,23 +23,23 @@ class PostService(
     private val postRepository: PostRepository,
     private val userRepository: UserRepository,
     private val postLikeRepository: PostLikeRepository,
-    private val postCommentRepository: PostCommentRepository
+    private val postCommentRepository: PostCommentRepository,
 ) {
     private val applicationUserId = 1  // Предположим, что id приложения равен 1
 
-    fun getPostsFromApplication(): List<PostDto> {
+    fun getPostsFromApplication(userId: Int): List<PostDto> {
         val posts = postRepository.findByUserId(applicationUserId)
-        return posts.map { it.toDto() }
+        return posts.map { it.toDto(userHasLikedPost(userId, it.id)) }
     }
 
-    fun getUserPosts(userId: Int): List<PostDto> {
+    fun getUserPosts(requestingUserId: Int, userId: Int): List<PostDto> {
         val posts = postRepository.findByUserId(userId)
-        return posts.map { it.toDto() }
+        return posts.map { it.toDto(userHasLikedPost(requestingUserId, it.id)) }
     }
 
-    fun getPost(postId: Int): PostDto {
+    fun getPost(requestingUserId: Int, postId: Int): PostDto {
         val post = postRepository.findById(postId).orElseThrow { IllegalArgumentException("Post not found") }
-        return post.toDto()
+        return post.toDto(userHasLikedPost(requestingUserId, post.id))
     }
 
     fun getPostsFromSubscriptions(userId: Int): List<PostDto> {
@@ -46,7 +47,7 @@ class PostService(
         val subscriptionIds = user.subscriptions.map { it.id }
         val pageable = PageRequest.of(0, 50, Sort.by(Sort.Direction.DESC, "id"))
         val posts = postRepository.findPostsByUserIds(subscriptionIds, pageable)
-        return posts.map { it.toDto() }
+        return posts.map { it.toDto(userHasLikedPost(userId, it.id)) }
     }
 
     fun createPost(userId: Int, createPostRequest: CreatePostRequest): PostDto {
@@ -58,7 +59,7 @@ class PostService(
             date = LocalDate.now().toString(),
         )
         val savedPost = postRepository.save(post)
-        return savedPost.toDto()
+        return savedPost.toDto(userHasLikedPost(userId, savedPost.id))
     }
 
     fun deletePost(userId: Int, postId: Int) {
@@ -82,7 +83,6 @@ class PostService(
         return savedComment.toDto()
     }
 
-
     fun addLike(userId: Int, postId: Int) {
         val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
         val post = postRepository.findById(postId).orElseThrow { IllegalArgumentException("Post not found") }
@@ -98,5 +98,9 @@ class PostService(
         if (like != null) {
             postLikeRepository.delete(like)
         }
+    }
+
+    private fun userHasLikedPost(userId: Int, postId: Int): Boolean {
+        return postLikeRepository.findByUserIdAndPostId(userId, postId) != null
     }
 }

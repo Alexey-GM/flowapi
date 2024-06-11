@@ -8,5 +8,6 @@ data class PostDto(
     val likes: Int,
     val user: UserDto,
     val media: String,
+    val isLiked: Boolean
 )
 

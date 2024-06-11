@@ -23,9 +23,11 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url= uri( "https://repo1.maven.apache.org/maven2") }
 }
 
 dependencies {
+	implementation("org.springframework.boot:spring-boot-starter:3.2.5")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	implementation("org.springframework.boot:spring-boot-starter-web")

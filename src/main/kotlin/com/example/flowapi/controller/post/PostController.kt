@@ -3,31 +3,38 @@ package com.example.flowapi.controller.post
 import com.example.flowapi.controller.post.dto.PostCommentDto
 import com.example.flowapi.controller.post.dto.PostDto
 import com.example.flowapi.model.Post
+import com.example.flowapi.service.FileService
 import com.example.flowapi.service.PostService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/posts")
 class PostController(
-    private val postService: PostService
+    private val postService: PostService,
+    private val fileService: FileService
 ) {
     @GetMapping("/application")
     fun getPostsFromApplication(): ResponseEntity<List<PostDto>> {
-        val posts = postService.getPostsFromApplication()
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val posts = postService.getPostsFromApplication(userId)
         return ResponseEntity.ok(posts)
     }
 
     @GetMapping("/user-posts")
     fun getUserPosts(@RequestParam userId: Int): ResponseEntity<List<PostDto>> {
-        val posts = postService.getUserPosts(userId)
+        val requestingUserId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val posts = postService.getUserPosts(requestingUserId, userId)
         return ResponseEntity.ok(posts)
     }
 
     @GetMapping("/{postId}")
     fun getPost(@PathVariable postId: Int): ResponseEntity<PostDto> {
-        val posts = postService.getPost(postId)
+        val requestingUserId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val posts = postService.getPost(requestingUserId, postId)
         return ResponseEntity.ok(posts)
     }
 
@@ -37,11 +44,41 @@ class PostController(
         val posts = postService.getPostsFromSubscriptions(userId)
         return ResponseEntity.ok(posts)
     }
-    @PostMapping
-    fun createPost(@RequestBody createPostRequest: CreatePostRequest): ResponseEntity<PostDto> {
+
+    @PostMapping(consumes = ["multipart/form-data"])
+    fun createPost(
+        @RequestPart("file") file: MultipartFile?,
+        @RequestPart("post") createPostRequest: CreatePostRequest
+    ): ResponseEntity<Void> {
         val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
-        val post = postService.createPost(userId, createPostRequest)
-        return ResponseEntity.ok(post)
+        var mediaUrl: String? = null
+
+        if (createPostRequest.media.isNullOrEmpty()) {
+            file?.let {
+                mediaUrl = try {
+                    fileService.saveFile(it)
+                    "/uploads/${it.originalFilename}" // Здесь вы указываете путь к файлу
+                } catch (e: Exception) {
+                    return ResponseEntity.status(500).body(null)
+                }
+            }
+            val updatedPostRequest = createPostRequest.copy(media = mediaUrl)
+            val post = postService.createPost(userId, updatedPostRequest)
+            return ResponseEntity.ok().build()
+        } else {
+            val post = postService.createPost(userId, createPostRequest)
+            return ResponseEntity.ok().build()
+        }
+    }
+
+    @PostMapping("/upload")
+    fun uploadFile(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+        return try {
+            fileService.saveFile(file)
+            ResponseEntity.ok("File uploaded successfully: ${file.originalFilename}")
+        } catch (e: Exception) {
+            ResponseEntity.status(500).body("Failed to upload file: ${file.originalFilename}")
+        }
     }
 
     @DeleteMapping("/{postId}")

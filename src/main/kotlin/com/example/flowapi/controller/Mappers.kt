@@ -54,15 +54,16 @@ fun TrickStep.toResponse(): StepResponse {
     )
 }
 
-fun Post.toDto(): PostDto {
+fun Post.toDto(isLiked: Boolean): PostDto {
     return PostDto(
         id = this.id,
         text = this.text ?: "",
-        date = this.date.toString(),
+        date = this.date,
         comments = this.comments.map { it.toDto() },
         likes = this.likes.size,
         user = this.user.toDto(),
-        media = this.media ?: ""
+        media = this.media ?: "",
+        isLiked = isLiked
     )
 }
 
