@@ -57,18 +57,17 @@ class PostController(
             file?.let {
                 mediaUrl = try {
                     fileService.saveFile(it)
-                    "/uploads/${it.originalFilename}" // Здесь вы указываете путь к файлу
                 } catch (e: Exception) {
                     return ResponseEntity.status(500).body(null)
                 }
             }
-            val updatedPostRequest = createPostRequest.copy(media = mediaUrl)
-            val post = postService.createPost(userId, updatedPostRequest)
-            return ResponseEntity.ok().build()
         } else {
-            val post = postService.createPost(userId, createPostRequest)
-            return ResponseEntity.ok().build()
+            mediaUrl = createPostRequest.media
         }
+
+        val updatedPostRequest = createPostRequest.copy(media = mediaUrl)
+        val post = postService.createPost(userId, updatedPostRequest)
+        return ResponseEntity.ok().build()
     }
 
     @PostMapping("/upload")

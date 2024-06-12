@@ -6,12 +6,12 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.util.*
 
 @Service
 class FileService {
 
     private val rootLocation: Path = Paths.get("uploads")
-    private val serverUrl = "http://79.174.80.34"  // Захардкоженный IP-адрес и схема
 
     init {
         Files.createDirectories(rootLocation)
@@ -21,12 +21,12 @@ class FileService {
         if (file.isEmpty) {
             throw RuntimeException("Failed to store empty file")
         }
-        val destinationFile = rootLocation.resolve(Paths.get(file.originalFilename))
+        val destinationFileName = file.originalFilename!!
+        val destinationFile = rootLocation.resolve(destinationFileName)
             .normalize().toAbsolutePath()
         file.inputStream.use { inputStream ->
             Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING)
         }
-        // Возвращаем полный URL для сохранения в базу данных
-        return "$serverUrl/images/" + file.originalFilename
+        return "http://79.174.80.34/images/$destinationFileName"
     }
 }
