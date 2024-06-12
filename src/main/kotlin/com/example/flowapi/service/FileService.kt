@@ -20,6 +20,7 @@ class FileService {
         if (file.isEmpty) {
             throw RuntimeException("Failed to store empty file")
         }
+        val rootLocation: Path = Paths.get("/app/uploads")
         val destinationFile = rootLocation.resolve(Paths.get(file.originalFilename))
             .normalize().toAbsolutePath()
         file.inputStream.use { inputStream ->
