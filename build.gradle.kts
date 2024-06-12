@@ -23,7 +23,6 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven { url= uri( "https://repo1.maven.apache.org/maven2") }
 }
 
 dependencies {
