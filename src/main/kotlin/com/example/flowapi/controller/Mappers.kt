@@ -1,5 +1,7 @@
 package com.example.flowapi.controller
 
+import com.example.flowapi.controller.help.HelpRequestDTO
+import com.example.flowapi.controller.help.HelpRequestResponse
 import com.example.flowapi.controller.post.dto.PostCommentDto
 import com.example.flowapi.controller.post.dto.PostDto
 import com.example.flowapi.controller.post.dto.UserDto
@@ -87,5 +89,18 @@ fun PostComment.toDto(): PostCommentDto {
         likes = 0,
         text = this.text,
         date = this.date.toString()
+    )
+}
+
+fun HelpRequest.toResponse(): HelpRequestResponse {
+    return HelpRequestResponse(
+        id = this.id,
+        description = this.description,
+        videoUrl = this.videoUrl,
+        fromUser = this.fromUser.toDto(),
+        toUser = this.toUser.toDto(),
+        reply = this.reply,
+        replyDate = this.replyDate,
+        requestDate = this.requestDate
     )
 }

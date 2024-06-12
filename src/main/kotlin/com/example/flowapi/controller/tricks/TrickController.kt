@@ -47,15 +47,16 @@ class TrickController(
         return ResponseEntity.ok(tricks)
     }
 
+    @GetMapping("/recommendations/{sportId}")
+    fun getRecommendations(@PathVariable sportId: Int): ResponseEntity<List<TricksResponse>> {
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val recommendations = trickService.getRecommendedTricks(userId, sportId)
+        return ResponseEntity.ok(recommendations)
+    }
+
     @GetMapping("/user/{userId}/in-process/{sportId}")
     fun getUserTricksInProcess(@PathVariable userId: Int, @PathVariable sportId: Int): ResponseEntity<List<TricksResponse>> {
         val tricks = trickService.getUserTricksInProcess(userId, sportId)
-        return ResponseEntity.ok(tricks)
-    }
-
-    @GetMapping("/user/{userId}/next/{sportId}")
-    fun getUserTricksNext(@PathVariable userId: Int, @PathVariable sportId: Int): ResponseEntity<List<TricksResponse>> {
-        val tricks = trickService.getUserTricksNext(userId, sportId)
         return ResponseEntity.ok(tricks)
     }
 

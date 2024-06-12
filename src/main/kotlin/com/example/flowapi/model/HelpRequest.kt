@@ -24,6 +24,12 @@ data class HelpRequest(
     @Column(nullable = false)
     val videoUrl: String,
 
+    @Column(nullable = true)
+    var reply: String?,
+
+    @Column(nullable = true)
+    var replyDate: String?,
+
     @Column(nullable = false)
     val requestDate: String = LocalDateTime.now().toString()
 )

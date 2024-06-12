@@ -40,6 +40,10 @@ class UserService(private val userRepository: UserRepository, private val sportR
         return user.sports.map { it.sport }
     }
 
+    fun getUserRole(userId: Int): String {
+        return userRepository.getUserRole(userId)
+    }
+
     fun getUserIdFromToken(): Int? {
         val authentication = SecurityContextHolder.getContext().authentication
         if (authentication != null && authentication.details is UserDetails) {
@@ -59,5 +63,27 @@ class UserService(private val userRepository: UserRepository, private val sportR
         }
 
         return userSportInfos
+    }
+
+    fun getUserSubscribers(userId: Int): Set<User> {
+        return userRepository.findSubscribersByUserId(userId)
+    }
+
+    fun getUserSubscriptions(userId: Int): Set<User> {
+        return userRepository.findSubscriptionsByUserId(userId)
+    }
+
+    fun subscribe(userId: Int, subscriptionId: Int) {
+        val user = userRepository.findById(userId).orElseThrow { ApiException(404, "User not found") }
+        val subscription = userRepository.findById(subscriptionId).orElseThrow { ApiException(404, "Subscription not found") }
+        user.subscriptions += subscription
+        userRepository.save(user)
+    }
+
+    fun unsubscribe(userId: Int, subscriptionId: Int) {
+        val user = userRepository.findById(userId).orElseThrow { ApiException(404, "User not found") }
+        val subscription = userRepository.findById(subscriptionId).orElseThrow { ApiException(404, "Subscription not found") }
+        user.subscriptions -= subscription
+        userRepository.save(user)
     }
 }

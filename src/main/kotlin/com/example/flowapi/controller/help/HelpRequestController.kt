@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/help-requests")
 class HelpRequestController(private val helpRequestService: HelpRequestService) {
 
+
     @PostMapping
     fun sendHelpRequest(@RequestBody helpRequestDTO: HelpRequestDTO): ResponseEntity<HelpRequest> {
         val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
@@ -27,5 +28,27 @@ class HelpRequestController(private val helpRequestService: HelpRequestService) 
     @GetMapping("/professionals")
     fun getAllProfessionalsBySport(@RequestParam sportId: Int): List<UserDto> {
         return helpRequestService.getAllProfessionalsBySport(sportId)
+    }
+
+    @GetMapping("/received")
+    fun getHelpRequestsForCurrentUser(): ResponseEntity<List<HelpRequestResponse>> {
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val helpRequests = helpRequestService.getHelpRequestsForUser(userId)
+        return ResponseEntity.ok(helpRequests)
+    }
+
+    @PostMapping("/{id}/reply")
+    fun updateReply(
+        @PathVariable id: Int,
+        @RequestBody replyDTO: ReplyDTO
+    ): ResponseEntity<Void> {
+        val updatedHelpRequest = helpRequestService.updateReply(id, replyDTO.reply)
+        return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/{helpRequestId}")
+    fun getHelpRequest(@PathVariable helpRequestId: Int,): ResponseEntity<HelpRequestResponse> {
+        val helpRequests = helpRequestService.getHelpRequest(helpRequestId)
+        return ResponseEntity.ok(helpRequests)
     }
 }

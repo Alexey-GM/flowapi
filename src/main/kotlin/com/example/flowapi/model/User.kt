@@ -64,7 +64,7 @@ data class User(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "subscription_id")]
     )
-    val subscriptions: Set<User> = mutableSetOf()
+    var subscriptions: Set<User> = mutableSetOf()
 ) {
     fun comparePassword(password: String): Boolean {
         return BCryptPasswordEncoder().matches(password, this.password)

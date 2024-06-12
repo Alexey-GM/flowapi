@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface HelpRequestRepository : JpaRepository<HelpRequest, Int> {
-
+    fun findByToUserId(toUserId: Int): List<HelpRequest>
 }
 

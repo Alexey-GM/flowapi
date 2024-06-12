@@ -29,4 +29,12 @@ interface UserRepository: JpaRepository<User, Int> {
     @Query("SELECT COUNT(s) FROM User u JOIN u.subscriptions s WHERE u.id = :userId")
     fun countSubscribersByUserId(userId: Int): Int
 
+    @Query("SELECT u.role FROM User u WHERE u.id = :userId")
+    fun getUserRole(@Param("userId") userId: Int): String
+
+    @Query("SELECT s FROM User u JOIN u.subscriptions s WHERE u.id = :userId")
+    fun findSubscriptionsByUserId(userId: Int): Set<User>
+
+    @Query("SELECT u FROM User u JOIN u.subscriptions s WHERE s.id = :userId")
+    fun findSubscribersByUserId(userId: Int): Set<User>
 }
