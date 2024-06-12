@@ -16,7 +16,7 @@ class FileService {
         Files.createDirectories(rootLocation)
     }
 
-    fun saveFile(file: MultipartFile) {
+    fun saveFile(file: MultipartFile): String {
         if (file.isEmpty) {
             throw RuntimeException("Failed to store empty file")
         }
@@ -26,5 +26,6 @@ class FileService {
         file.inputStream.use { inputStream ->
             Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING)
         }
+        return "/images/" + file.originalFilename
     }
 }
