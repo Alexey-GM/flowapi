@@ -42,14 +42,6 @@ class PostService(
         return post.toDto(userHasLikedPost(requestingUserId, post.id))
     }
 
-    fun getPostsFromSubscriptions(userId: Int): List<PostDto> {
-        val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
-        val subscriptionIds = user.subscriptions.map { it.id }
-        val pageable = PageRequest.of(0, 50, Sort.by(Sort.Direction.DESC, "id"))
-        val posts = postRepository.findPostsByUserIds(subscriptionIds, pageable)
-        return posts.map { it.toDto(userHasLikedPost(userId, it.id)) }
-    }
-
     fun createPost(userId: Int, createPostRequest: CreatePostRequest): PostDto {
         val user = userRepository.findById(userId).orElseThrow { IllegalArgumentException("User not found") }
         val post = Post(
@@ -81,6 +73,11 @@ class PostService(
         )
         val savedComment = postCommentRepository.save(comment)
         return savedComment.toDto()
+    }
+
+    fun getPostsByUserSubscriptions(userId: Int): List<PostDto> {
+        val posts = postRepository.findPostsByUserSubscriptions(userId)
+        return posts.map { it.toDto(userHasLikedPost(userId, it.id)) }
     }
 
     fun addLike(userId: Int, postId: Int) {

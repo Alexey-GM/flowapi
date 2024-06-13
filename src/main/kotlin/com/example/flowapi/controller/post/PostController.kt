@@ -41,7 +41,7 @@ class PostController(
     @GetMapping("/subscriptions")
     fun getPostsFromSubscriptions(): ResponseEntity<List<PostDto>> {
         val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
-        val posts = postService.getPostsFromSubscriptions(userId)
+        val posts = postService.getPostsByUserSubscriptions(userId)
         return ResponseEntity.ok(posts)
     }
 
