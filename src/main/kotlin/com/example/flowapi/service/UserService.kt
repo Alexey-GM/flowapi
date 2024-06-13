@@ -7,16 +7,19 @@ import com.example.flowapi.exception.ApiException
 import com.example.flowapi.model.Sport
 import com.example.flowapi.model.User
 import com.example.flowapi.model.UserSport
+import com.example.flowapi.model.UserSubscription
 import com.example.flowapi.repository.SportRepository
 import com.example.flowapi.repository.TrickRepository
 import com.example.flowapi.repository.UserRepository
+import com.example.flowapi.repository.UserSubscriptionRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserService(private val userRepository: UserRepository, private val sportRepository: SportRepository, private val trickRepository: TrickRepository) {
+class UserService(private val userRepository: UserRepository, private val sportRepository: SportRepository, private val trickRepository: TrickRepository, private val userSubscriptionRepository: UserSubscriptionRepository) {
 
     fun getUser(userId: Int): UserDto {
         val user = userRepository.findById(userId).orElseThrow { ApiException(404, "User not found") }
@@ -74,20 +77,34 @@ class UserService(private val userRepository: UserRepository, private val sportR
     }
 
     fun subscribe(userId: Int, subscriptionId: Int) {
+        if (userSubscriptionRepository.existsByUserIdAndSubscriberId(subscriptionId, userId)) {
+            throw ApiException(400, "Already subscribed")
+        }
         val user = userRepository.findById(userId).orElseThrow { ApiException(404, "User not found") }
         val subscription = userRepository.findById(subscriptionId).orElseThrow { ApiException(404, "Subscription not found") }
-        user.subscriptions += subscription
+        val userSubscription = UserSubscription(user = subscription, subscriber = user)
+        user.subscriptions.add(userSubscription)
         userRepository.save(user)
     }
 
     fun unsubscribe(userId: Int, subscriptionId: Int) {
-        val user = userRepository.findById(userId).orElseThrow { ApiException(404, "User not found") }
-        val subscription = userRepository.findById(subscriptionId).orElseThrow { ApiException(404, "Subscription not found") }
-        user.subscriptions -= subscription
-        userRepository.save(user)
+        val userExists = userRepository.existsById(userId)
+        val subscriptionExists = userRepository.existsById(subscriptionId)
+
+        if (!userExists || !subscriptionExists) {
+            throw ApiException(404, "User or Subscription not found")
+        }
+
+        val userSubscription = userSubscriptionRepository.findByUserIdAndSubscriberId(subscriptionId, userId)
+            ?: throw ApiException(400, "Subscription not found")
+
+        userSubscriptionRepository.delete(userSubscription)
     }
 
+
+
     fun isUserSubscribed(userId: Int, subscriptionId: Int): Boolean {
-        return userRepository.existsByIdAndSubscriptionsId(userId, subscriptionId)
+        return userSubscriptionRepository.existsByUserIdAndSubscriberId(subscriptionId, userId)
     }
 }
+

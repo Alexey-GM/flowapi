@@ -3,14 +3,12 @@ package com.example.flowapi.controller.user
 import com.example.flowapi.controller.post.dto.UserDto
 import com.example.flowapi.controller.sport.SportResponse
 import com.example.flowapi.controller.toDto
-import com.example.flowapi.controller.toModel
 import com.example.flowapi.controller.toResponse
-import com.example.flowapi.model.User
 import com.example.flowapi.service.UserService
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -24,8 +22,9 @@ class UserController(private val service: UserService) {
     }
 
     @PostMapping("/{userId}/sports/{sportId}")
-    fun addSportToUser(@PathVariable userId: Int, @PathVariable sportId: Int) {
+    fun addSportToUser(@PathVariable userId: Int, @PathVariable sportId: Int): ResponseEntity<Void> {
         service.addSportToUser(userId, sportId)
+        return ResponseEntity.ok().build()
     }
 
     @GetMapping("/{userId}/sports")

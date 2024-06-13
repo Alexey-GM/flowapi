@@ -58,13 +58,11 @@ data class User(
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val likes: List<PostLike> = mutableListOf(),
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_subscriptions",
-        joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "subscription_id")]
-    )
-    var subscriptions: Set<User> = mutableSetOf()
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val subscriptions: MutableList<UserSubscription> = mutableListOf(),
+
+    @OneToMany(mappedBy = "subscriber", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val subscribers: MutableSet<UserSubscription> = mutableSetOf()
 ) {
     fun comparePassword(password: String): Boolean {
         return BCryptPasswordEncoder().matches(password, this.password)

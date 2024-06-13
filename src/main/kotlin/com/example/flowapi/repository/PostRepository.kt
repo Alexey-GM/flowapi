@@ -14,13 +14,14 @@ interface PostRepository: JpaRepository<Post, Int> {
 
     @Query(value = "SELECT p.* FROM posts p " +
             "WHERE p.user_id IN ( " +
-            "    SELECT s.user_id " +
+            "    SELECT s.subscriber_id " +
             "    FROM user_subscriptions s " +
-            "    WHERE s.subscription_id = :userId " +
+            "    WHERE s.user_id = :userId " +
             ") " +
             "ORDER BY p.id DESC " +
             "LIMIT 50", nativeQuery = true)
     fun findPostsByUserSubscriptions(@Param("userId") userId: Int): List<Post>
+
 }
 
 @Repository

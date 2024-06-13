@@ -1,5 +1,4 @@
 package com.example.flowapi.exception
 
-class ApiException(val statusCode: Int, override val message: String): RuntimeException()
-
+class ApiException(val status: Int, message: String) : RuntimeException(message)
 
