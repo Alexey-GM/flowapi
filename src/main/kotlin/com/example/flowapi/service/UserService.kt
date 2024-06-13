@@ -86,4 +86,8 @@ class UserService(private val userRepository: UserRepository, private val sportR
         user.subscriptions -= subscription
         userRepository.save(user)
     }
+
+    fun isUserSubscribed(userId: Int, subscriptionId: Int): Boolean {
+        return userRepository.existsByIdAndSubscriptionsId(userId, subscriptionId)
+    }
 }

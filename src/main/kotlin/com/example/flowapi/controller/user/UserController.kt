@@ -83,4 +83,14 @@ class UserController(private val service: UserService) {
         return ResponseEntity.ok().build()
     }
 
+    @GetMapping("/check-subscription/{subscriptionId}")
+    fun checkSub(@PathVariable subscriptionId: Int): ResponseEntity<Void> {
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val result = service.isUserSubscribed(userId, subscriptionId)
+        return if (result) {
+            ResponseEntity.ok().build()
+        } else {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+        }
+    }
 }

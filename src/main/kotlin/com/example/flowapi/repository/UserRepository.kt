@@ -37,4 +37,5 @@ interface UserRepository: JpaRepository<User, Int> {
 
     @Query("SELECT u FROM User u JOIN u.subscriptions s WHERE s.id = :userId")
     fun findSubscribersByUserId(userId: Int): Set<User>
+    fun existsByIdAndSubscriptionsId(userId: Int, subscriptionId: Int): Boolean
 }
