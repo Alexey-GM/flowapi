@@ -12,5 +12,6 @@ data class TricksResponse(
     val difficulty: String,
     val status: TrickStatus,
     val steps: List<StepResponse>,
-    val comments: List<TrickComment>
+    val comments: List<TrickCommentDto>,
+    val videos: List<TrickVideo>
 )

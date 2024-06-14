@@ -45,6 +45,12 @@ class UserController(private val service: UserService) {
         return ResponseEntity.ok(count)
     }
 
+    @GetMapping("/{id}/subscriptions/count")
+    fun getUserSubscriptionsCount(@PathVariable id: Int): ResponseEntity<Int> {
+        val count = service.getUserSubscriptionsCount(id)
+        return ResponseEntity.ok(count)
+    }
+
     @GetMapping("/check-pro")
     fun checkIfUserIsPro(): ResponseEntity<Void> {
         val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()

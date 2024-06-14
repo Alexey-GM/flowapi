@@ -32,6 +32,9 @@ data class Trick (
     val steps: List<TrickStep> = mutableListOf(),
 
     @OneToMany(mappedBy = "trick", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val videos: List<TrickVideo> = mutableListOf(),
+
+    @OneToMany(mappedBy = "trick", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val users: List<UserTrick> = mutableListOf(),
 
     @OneToMany(mappedBy = "trick", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)

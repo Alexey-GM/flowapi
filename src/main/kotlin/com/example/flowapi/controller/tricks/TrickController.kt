@@ -1,6 +1,8 @@
 package com.example.flowapi.controller.tricks
 
+import com.example.flowapi.controller.post.CreateCommentRequest
 import com.example.flowapi.controller.toResponse
+import com.example.flowapi.model.TrickComment
 import com.example.flowapi.service.TricksService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
@@ -27,6 +29,12 @@ class TrickController(
         return ResponseEntity.ok(trick)
     }
 
+    @PostMapping("/{trickId}/comment")
+    fun addComment(@PathVariable trickId: Int, @RequestBody createCommentRequest: CreateCommentRequest): ResponseEntity<Void> {
+        val userId = SecurityContextHolder.getContext().authentication.details.toString().toInt()
+        val savedComment = trickService.addCommentToTrick(userId, trickId, createCommentRequest.text)
+        return ResponseEntity.ok().build()
+    }
 
     @GetMapping("/categories/{sportId}")
     fun getCategories(@PathVariable sportId: Int): ResponseEntity<List<String>> {

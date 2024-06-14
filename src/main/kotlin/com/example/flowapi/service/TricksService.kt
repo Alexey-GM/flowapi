@@ -2,19 +2,23 @@ package com.example.flowapi.service
 
 import com.example.flowapi.controller.toResponse
 import com.example.flowapi.controller.tricks.TricksResponse
+import com.example.flowapi.model.TrickComment
 import com.example.flowapi.model.TrickStatus
 import com.example.flowapi.model.User
 import com.example.flowapi.model.UserTrick
+import com.example.flowapi.repository.TrickCommentRepository
 import com.example.flowapi.repository.TrickRepository
 import com.example.flowapi.repository.UserTrickRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 @Service
 class TricksService(
     private val trickRepository: TrickRepository,
-    private val userTrickRepository: UserTrickRepository
+    private val userTrickRepository: UserTrickRepository,
+    private val trickCommentRepository: TrickCommentRepository
 ) {
 
     fun getTrickById(userId: Int, trickId: Int): TricksResponse {
@@ -88,6 +92,17 @@ class TricksService(
         }
     }
 
+    fun addCommentToTrick(userId: Int, trickId: Int, commentText: String): TrickComment {
+        val user = User(id = userId)
+        val trick = trickRepository.getTrickById(trickId)
+        val comment = TrickComment(
+            user = user,
+            trick = trick,
+            comment = commentText,
+            commentDate = LocalDateTime.now().toString()
+        )
+        return trickCommentRepository.save(comment)
+    }
 
     fun completeLearningTrick(userId: Int, trickId: Int, learningDuration: Int) {
         val userTrick = userTrickRepository.findByUserIdAndTrickId(userId, trickId)

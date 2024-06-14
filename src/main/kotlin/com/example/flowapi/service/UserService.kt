@@ -38,6 +38,10 @@ class UserService(private val userRepository: UserRepository, private val sportR
         return userRepository.countSubscribersByUserId(userId)
     }
 
+    fun getUserSubscriptionsCount(userId: Int): Int {
+        return userRepository.countSubscriptionsByUserId(userId)
+    }
+
     fun getUserSports(userId: Int): List<Sport> {
         val user = userRepository.findById(userId).orElseThrow { ApiException(404, "User not found") }
         return user.sports.map { it.sport }

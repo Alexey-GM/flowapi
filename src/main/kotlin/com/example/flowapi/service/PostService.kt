@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class PostService(
@@ -48,7 +49,7 @@ class PostService(
             text = createPostRequest.text,
             media = createPostRequest.media,
             user = user,
-            date = LocalDate.now().toString(),
+            date = LocalDateTime.now().toString(),
         )
         val savedPost = postRepository.save(post)
         return savedPost.toDto(userHasLikedPost(userId, savedPost.id))
@@ -69,7 +70,7 @@ class PostService(
             text = createCommentRequest.text,
             user = user,
             post = post,
-            date = LocalDate.now().toString()
+            date = LocalDateTime.now().toString()
         )
         val savedComment = postCommentRepository.save(comment)
         return savedComment.toDto()

@@ -7,6 +7,7 @@ import com.example.flowapi.controller.post.dto.PostDto
 import com.example.flowapi.controller.post.dto.UserDto
 import com.example.flowapi.controller.sport.SportResponse
 import com.example.flowapi.controller.tricks.StepResponse
+import com.example.flowapi.controller.tricks.TrickCommentDto
 import com.example.flowapi.controller.tricks.TricksResponse
 import com.example.flowapi.controller.user.UserRequest
 import com.example.flowapi.model.*
@@ -43,8 +44,18 @@ fun Trick.toResponse(userTrickStatus: TrickStatus? = null): TricksResponse {
         imageUrl = this.imageUrl,
         difficulty = this.difficulty,
         steps = this.steps.map { it.toResponse() },
-        comments = this.comments,
-        status = userTrickStatus ?: TrickStatus.NOT_LEARNED // Установка статуса по умолчанию
+        comments = this.comments.map {it.toDto()},
+        status = userTrickStatus ?: TrickStatus.NOT_LEARNED,
+        videos = this.videos
+    )
+}
+
+fun TrickComment.toDto(): TrickCommentDto {
+    return TrickCommentDto(
+        id = this.id,
+        user = this.user.toDto(),
+        comment = this.comment,
+        commentDate = this.commentDate
     )
 }
 
