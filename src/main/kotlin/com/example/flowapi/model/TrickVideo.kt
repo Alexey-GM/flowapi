@@ -10,7 +10,7 @@ data class TrickVideo (
     val id: Int = 0,
 
     @Column(name = "url", nullable = false)
-    val url: Int = 0,
+    val url: String = "",
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trick_id", nullable = false)
