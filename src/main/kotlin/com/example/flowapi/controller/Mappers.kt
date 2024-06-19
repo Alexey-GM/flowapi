@@ -46,7 +46,7 @@ fun Trick.toResponse(userTrickStatus: TrickStatus? = null): TricksResponse {
         steps = this.steps.map { it.toResponse() },
         comments = this.comments.map {it.toDto()},
         status = userTrickStatus ?: TrickStatus.NOT_LEARNED,
-        videos = this.videos
+        videos = this.videos.map { it.url }
     )
 }
 
