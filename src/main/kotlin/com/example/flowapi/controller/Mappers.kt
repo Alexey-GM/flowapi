@@ -115,3 +115,16 @@ fun HelpRequest.toResponse(): HelpRequestResponse {
         requestDate = this.requestDate
     )
 }
+
+fun UserRequest.toModel(imageUrl: String? = null): User {
+    return User(
+        mail = this.mail,
+        password = this.password,
+        firstName = this.firstName,
+        lastName = this.lastName,
+        dateOfBirth = this.dateOfBirth,
+        gender = this.gender,
+        city = this.city,
+        imageUrl = imageUrl ?: ""
+    )
+}

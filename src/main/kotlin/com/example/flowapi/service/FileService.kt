@@ -8,6 +8,8 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.*
 
+import java.util.UUID
+
 @Service
 class FileService {
 
@@ -21,12 +23,15 @@ class FileService {
         if (file.isEmpty) {
             throw RuntimeException("Failed to store empty file")
         }
-        val destinationFileName = file.originalFilename!!
-        val destinationFile = rootLocation.resolve(destinationFileName)
+        // Генерация уникального имени файла с использованием UUID и расширения оригинального файла
+        val extension = file.originalFilename?.substringAfterLast(".") ?: ""
+        val uniqueFileName = "${UUID.randomUUID()}.$extension"
+        val destinationFile = rootLocation.resolve(uniqueFileName)
             .normalize().toAbsolutePath()
         file.inputStream.use { inputStream ->
             Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING)
         }
-        return "http://79.174.80.34/images/$destinationFileName"
+        return "http://79.174.80.34/images/$uniqueFileName"
     }
 }
+
