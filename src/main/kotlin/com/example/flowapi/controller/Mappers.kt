@@ -125,6 +125,8 @@ fun UserRequest.toModel(imageUrl: String? = null): User {
         dateOfBirth = this.dateOfBirth,
         gender = this.gender,
         city = this.city,
+        role = "USER",
+        status = "Новичок",
         imageUrl = imageUrl ?: ""
     )
 }
