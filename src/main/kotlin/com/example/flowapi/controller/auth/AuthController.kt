@@ -5,6 +5,7 @@ import com.example.flowapi.controller.user.UserRequest
 import com.example.flowapi.controller.user.UserResponse
 import com.example.flowapi.service.AuthenticationService
 import com.example.flowapi.service.FileService
+import com.example.flowapi.service.TokenService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -14,7 +15,8 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/api")
 class AuthController(
     private val authenticationService: AuthenticationService,
-    private val fileService: FileService
+    private val fileService: FileService,
+    private val tokenService: TokenService
 ) {
     @PostMapping("/auth")
     fun authentication(@RequestBody authRequest: AuthenticationRequest): AuthenticationResponse {
@@ -33,4 +35,20 @@ class AuthController(
         val token = authenticationService.authenticate(authRequest)
         return ResponseEntity.ok(UserResponse(savedUser.id, token.accessToken))
     }
+
+    @GetMapping("/token-expired")
+    fun validateToken(@RequestHeader("Authorization") token: String): ResponseEntity<Boolean> {
+        val isValid = if (!token.doesNotContainBearerToken()) {
+            tokenService.isExpired(token.extractTokenValue())
+        } else {
+            true
+        }
+        return ResponseEntity.ok(isValid)
+    }
+
+    private fun String?.doesNotContainBearerToken(): Boolean =
+        this == null || !this.startsWith("Bearer")
+
+    private fun String.extractTokenValue(): String =
+        this.substringAfter("Bearer ")
 }

@@ -14,9 +14,9 @@ interface PostRepository: JpaRepository<Post, Int> {
 
     @Query(value = "SELECT p.* FROM posts p " +
             "WHERE p.user_id IN ( " +
-            "    SELECT s.subscriber_id " +
+            "    SELECT s.user_id " +
             "    FROM user_subscriptions s " +
-            "    WHERE s.user_id = :userId " +
+            "    WHERE s.subscriber_id = :userId " +
             ") " +
             "ORDER BY p.id DESC " +
             "LIMIT 50", nativeQuery = true)
